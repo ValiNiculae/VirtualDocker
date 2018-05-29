@@ -1,0 +1,51 @@
+#!/bin/sh
+show_menu(){
+    NORMAL=`echo "\033[m"`
+    MENU=`echo "\033[36m"` #Blue
+    NUMBER=`echo "\033[33m"` #yellow
+    FGRED=`echo "\033[41m"`
+    RED_TEXT=`echo "\033[31m"`
+    ENTER_LINE=`echo "\033[33m"`
+    echo -e "${MENU}*********************************************${NORMAL}"
+    echo -e "${MENU}**${NUMBER} 1)${MENU} create-vm ${NORMAL}         - Create a VirtualBox machine"
+    echo -e "${MENU}**${NUMBER} 2)${MENU} add-project ${NORMAL}       - Configure a custom nginx config"
+	echo -e "${MENU}---------------------------------------------------------------------------------------------------"
+    echo -e "${MENU}**${NUMBER} 3)${MENU} domain-extension ${NORMAL}  - Change default(.test) domain extension"
+    echo -e "${MENU}**${NUMBER} 4)${MENU} external-url ${NORMAL}      - Generate an external url for a local domain" 
+    echo -e "${MENU}**${NUMBER} 5)${MENU} show-hosts-info ${NORMAL}   - Displays the config that needs to exist in the hosts file"
+    echo -e "${MENU}*********************************************${NORMAL}"
+    echo -e "${ENTER_LINE}Please enter a menu option and enter or ${RED_TEXT}enter to exit. ${NORMAL}"
+    read opt
+}
+
+clear
+clear
+show_menu
+while [ opt != '' ]
+    do
+    if [[ $opt = "" ]]; then 
+            exit;
+    else
+        case $opt in
+        1) clear;
+        "./resources/actions/create-vm.sh"
+        show_menu;
+        ;;
+		2) clear;
+        "./resources/actions/add-project.sh"
+        show_menu;
+        ;;
+
+
+        x)exit;
+        ;;
+
+        \n)exit;
+        ;;
+
+        *)clear;
+        show_menu;
+        ;;
+    esac
+fi
+done

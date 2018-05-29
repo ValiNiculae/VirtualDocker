@@ -1,0 +1,41 @@
+version: '3'
+   
+services:
+    # nginx
+    nginx:
+        image: nginx:1.10
+        restart: always
+        volumes:    
+            - {DOCKER_PATH}/volumes/nginx/conf.d/:/etc/nginx/conf.d:ro
+            - {DOCKER_PATH}/volumes/nginx/ssl/:/etc/nginx/ssl
+            - {PROJECTS_PATH}:/applications
+        ports: 
+            - "80:80"
+            - "443:443"
+
+    # php 7.2
+    php: 
+        image: php:7.2-fpm
+        restart: always
+        volumes:
+            - {PROJECTS_PATH}:/applications           
+
+    # mysql
+    mysql:
+        image: mysql:5.7
+        restart: always
+        volumes:
+          - {DOCKER_PATH}/volumes/mysql:/var/lib/mysql
+        ports: 
+            - "3306:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: secret
+        command: --innodb_use_native_aio=0
+    
+    #redis
+    redis:
+        image: redis:3.2
+        restart: always
+        ports:
+            - "6379:6379"
+            

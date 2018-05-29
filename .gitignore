@@ -1,0 +1,3 @@
+/builds
+/volumes/nginx/conf.d/*.conf
+.env
