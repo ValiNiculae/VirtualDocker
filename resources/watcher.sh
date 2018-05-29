@@ -21,6 +21,8 @@ build () {
 			
 			echo $FOLDER_DOMAIN_NAME
 		fi
+		
+		docker restart machine_nginx_1
 	done
 }
 
