@@ -1,6 +1,7 @@
 #!/bin/sh
 
 
+
 #   ____  _  _  __ _   ___  ____  __  __   __ _  ____ 
 #  (  __)/ )( \(  ( \ / __)(_  _)(  )/  \ (  ( \/ ___)
 #   ) _) ) \/ (/    /( (__   )(   )((  O )/    /\___ \
@@ -9,7 +10,7 @@
 
 # usage: get_projects_path 
 # return path to projects folder
-get_projects_path()
+function get_projects_path()
 {
 	while [ ! -d "${PROJECTS_DIRECTORY_PATH}" ]
 	do
@@ -30,8 +31,53 @@ get_projects_path()
 	echo "$PROJECTS_DIRECTORY_PATH"
 }
 
+function create_CA()
+{
+	if [ ! -f ./resources/ssl/vdockerCA.pem ] || [ ! -f ./resources/ssl/vdockerCA.key ];  then
+		openssl genrsa -out ./resources/ssl/vdockerCA.key 2048
+		openssl req -x509 -new -nodes -key ./resources/ssl/vdockerCA.key -sha256 -days 1024 -out ./resources/ssl/vdockerCA.pem -subj "//C=RO\ST=Ilfov\L=Bucuresti\O=VirtualDocker\OU=VD\CN=VirtualDocker"
+	fi
+}
+
+function generate_certificate_for_domain()
+{
+	create_CA
+	# Create a new private key if one doesnt exist, or use the xeisting one if it does
+	if [ -f ./resources/ssl/private.key ]; then
+	  KEY_OPT="-key"
+	else
+	  KEY_OPT="-keyout"
+	fi
+
+	DOMAIN=$1
+	COMMON_NAME=$1
+	SUBJECT="/C=RO/ST=None/L=BUCURESTI/O=None/CN=\"$COMMON_NAME\""
+	NUM_OF_DAYS=999
+	
+	openssl req -new -newkey rsa:2048 -sha256 -nodes $KEY_OPT ./resources/ssl/private.key -subj "$SUBJECT" -out ./resources/ssl/private.csr
+	
+cat <<EOF >./resources/ssl/v3.ext
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = $COMMON_NAME
+EOF
+	
+	openssl x509 -req -in ./resources/ssl/private.csr -CA ./resources/ssl/vdockerCA.pem -CAkey ./resources/ssl/vdockerCA.key -CAcreateserial -out ./resources/ssl/private.crt -days $NUM_OF_DAYS -sha256 -extfile ./resources/ssl/v3.ext 
+
+	# move output files to final filenames
+	mv ./resources/ssl/private.csr ./volumes/nginx/ssl/"$DOMAIN.csr"
+	cp ./resources/ssl/private.crt ./volumes/nginx/ssl/"$DOMAIN.crt"
+
+	# remove temp file
+	rm -f ./resources/ssl/private.crt;
+}
+
 # usage: create_VM <machine_name>
-create_VM()
+function create_VM()
 {
 	# default VM settings
 	CPU="1"
@@ -44,8 +90,9 @@ create_VM()
 	docker-machine stop $1
 }
 
+
 # usage: install_docker_machine
-install_docker_machine()
+function install_docker_machine()
 {
 	if [ -x "$(command -v docker-machine)" ]; then
 		return 1;
@@ -62,7 +109,7 @@ install_docker_machine()
 
 
 # usage: add_shared_folder <machine_name> <folder_to_share>
-add_shared_folders()
+function add_shared_folders()
 {
 	if ! type "$VBOX_MSI_INSTALL_PATH"vboxmanage &> /dev/null; then
 		echo -e "\e[91mWe can not find \"vboxmanage\" anywhere. Did you installed VirtualBox?\e[0m" >&2
@@ -78,16 +125,19 @@ add_shared_folders()
 
 
 # usage: generate_nginx_config <local_projects_path>
-generate_nginx_config()
+function generate_nginx_config()
 {
 	HOSTS_IP=$(docker-machine ip $MACHINE_NAME)
 	NGINX_CONFIG=$(pwd)/volumes/nginx/conf.d
 
 	for d in "$1"/*/ ; do
 		FOLDER_NAME=$(basename "$d")
-		FOLDER_DOMAIN_NAME=$(basename "${d// /-}").local	
+		FOLDER_DOMAIN_NAME=$(basename "${d// /-}").test	
 		
-		HOSTS+="$HOSTS_IP $FOLDER_DOMAIN_NAME\n"	
+		#generate ssl certificates
+		generate_certificate_for_domain $FOLDER_DOMAIN_NAME
+		
+		HOSTS+="$HOSTS_IP $FOLDER_DOMAIN_NAME\n"
 	done
 	
 	HOSTS+="$HOSTS_IP docker\n"
@@ -123,17 +173,15 @@ docker-machine ssh $MACHINE_NAME "sudo sh /docker/machine/resources/boot.sh"
 # 5- start all containers
 docker-machine ssh $MACHINE_NAME "cd /docker/machine && docker-compose up -d"
 
-# this needs to be here
-PROJECTS_DIRECTORY_PATH=/docker/projects/
+create_CA
 
 HOSTS=$(generate_nginx_config "$LOCAL_PROJECTS_PATH")
 
 # write to ENV file
 cp .env.sample .env
-sed -i "s#PROJECTS_PATH=.*#PROJECTS_PATH=$PROJECTS_DIRECTORY_PATH#g" .env 
+
 sed -i "s#LOCAL_PROJECTS_PATH=.*#LOCAL_PROJECTS_PATH=${LOCAL_PROJECTS_PATH}#g" .env 
-sed -i "s#DOCKER_MACHINE_NAME=.*#DOCKER_MACHINE_NAME=${MACHINE_NAME}#g" .env 
-sed -i "s#USE_VM=.*#USE_VM=${USE_VM}#g" .env 
+sed -i "s#MACHINE_NAME=.*#MACHINE_NAME=${MACHINE_NAME}#g" .env 
 
 
 # hosts settings

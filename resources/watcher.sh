@@ -16,8 +16,8 @@ build () {
 		if [ ! -f "$NGINX_CONFIG/$FOLDER_DOMAIN_NAME.conf" ] && [ ! "$FOLDER_NAME" = "New folder" ]; then
 			cp "$NGINX_CONFIG/www.conf.sample" "$NGINX_CONFIG/$FOLDER_DOMAIN_NAME.conf"
 			
-			sed -i "s#{{folder_name}}#${FOLDER_NAME}#g" "$NGINX_CONFIG/$FOLDER_DOMAIN_NAME.conf"
-			sed -i "s#{{folder_domain}}#${FOLDER_DOMAIN_NAME}#g" "$NGINX_CONFIG/$FOLDER_DOMAIN_NAME.conf"
+			sed -i "s#{{folder_name}}#${FOLDER_NAME};#g" "$NGINX_CONFIG/$FOLDER_DOMAIN_NAME.conf"
+			sed -i "s#{{folder_domain}}#${FOLDER_DOMAIN_NAME};#g" "$NGINX_CONFIG/$FOLDER_DOMAIN_NAME.conf"
 			
 			echo $FOLDER_DOMAIN_NAME
 		fi

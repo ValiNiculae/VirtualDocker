@@ -2,3 +2,5 @@
 /volumes/nginx/conf.d/*.conf
 .env
 /.idea
+/volumes/mysql
+/resources/ssl
