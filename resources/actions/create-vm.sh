@@ -31,51 +31,6 @@ function get_projects_path()
 	echo "$PROJECTS_DIRECTORY_PATH"
 }
 
-function create_CA()
-{
-	if [ ! -f ./resources/ssl/vdockerCA.pem ] || [ ! -f ./resources/ssl/vdockerCA.key ];  then
-		openssl genrsa -out ./resources/ssl/vdockerCA.key 2048
-		openssl req -x509 -new -nodes -key ./resources/ssl/vdockerCA.key -sha256 -days 1024 -out ./resources/ssl/vdockerCA.pem -subj "//C=RO\ST=Ilfov\L=Bucuresti\O=VirtualDocker\OU=VD\CN=VirtualDocker"
-	fi
-}
-
-function generate_certificate_for_domain()
-{
-	create_CA
-	# Create a new private key if one doesnt exist, or use the xeisting one if it does
-	if [ -f ./resources/ssl/private.key ]; then
-	  KEY_OPT="-key"
-	else
-	  KEY_OPT="-keyout"
-	fi
-
-	DOMAIN=$1
-	COMMON_NAME=$1
-	SUBJECT="/C=RO/ST=None/L=BUCURESTI/O=None/CN=\"$COMMON_NAME\""
-	NUM_OF_DAYS=999
-	
-	openssl req -new -newkey rsa:2048 -sha256 -nodes $KEY_OPT ./resources/ssl/private.key -subj "$SUBJECT" -out ./resources/ssl/private.csr
-	
-cat <<EOF >./resources/ssl/v3.ext
-authorityKeyIdentifier=keyid,issuer
-basicConstraints=CA:FALSE
-keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
-subjectAltName = @alt_names
-
-[alt_names]
-DNS.1 = $COMMON_NAME
-EOF
-	
-	openssl x509 -req -in ./resources/ssl/private.csr -CA ./resources/ssl/vdockerCA.pem -CAkey ./resources/ssl/vdockerCA.key -CAcreateserial -out ./resources/ssl/private.crt -days $NUM_OF_DAYS -sha256 -extfile ./resources/ssl/v3.ext 
-
-	# move output files to final filenames
-	mv ./resources/ssl/private.csr ./volumes/nginx/ssl/"$DOMAIN.csr"
-	cp ./resources/ssl/private.crt ./volumes/nginx/ssl/"$DOMAIN.crt"
-
-	# remove temp file
-	rm -f ./resources/ssl/private.crt;
-}
-
 # usage: create_VM <machine_name>
 function create_VM()
 {
