@@ -1,5 +1,15 @@
 #!/bin/sh
+
+current_file_directory=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
 show_menu(){
+
+	if [ -f $current_file_directory/.env ]; then
+		# load env variables
+		set -o allexport; source $current_file_directory/.env; set +o allexport
+	fi
+
+	
     NORMAL=`echo "\033[m"`
     MENU=`echo "\033[36m"` #Blue
     NUMBER=`echo "\033[33m"` #yellow
@@ -7,12 +17,12 @@ show_menu(){
     RED_TEXT=`echo "\033[31m"`
     ENTER_LINE=`echo "\033[33m"`
     echo -e "${MENU}*********************************************${NORMAL}"
-    echo -e "${MENU}**${NUMBER} 1)${MENU} create-vm ${NORMAL}         - Create a VirtualBox machine"
-    echo -e "${MENU}**${NUMBER} 2)${MENU} add-project ${NORMAL}       - Configure a custom nginx config"
+    echo -e "${MENU}**${NUMBER} 1)${MENU} create-vm ${NORMAL}                - Create a VirtualBox machine"
+    echo -e "${MENU}**${NUMBER} 2)${MENU} add-project ${NORMAL}              - Configure a custom nginx config"
 	echo -e "${MENU}---------------------------------------------------------------------------------------------------"
-    echo -e "${MENU}**${NUMBER} 3)${MENU} domain-extension ${NORMAL}  - Change default(.test) domain extension"
-    echo -e "${MENU}**${NUMBER} 4)${MENU} external-url ${NORMAL}      - Generate an external url for a local domain" 
-    echo -e "${MENU}**${NUMBER} 5)${MENU} show-hosts-info ${NORMAL}   - Displays the config that needs to exist in the hosts file"
+    echo -e "${MENU}**${NUMBER} 3)${MENU} change-domain-extension ${NORMAL}  - Change current domain extension (${DOMAIN_EXTENSION})"
+    echo -e "${MENU}**${NUMBER} 4)${MENU} external-url ${NORMAL}             - Generate an external url for a local domain" 
+    echo -e "${MENU}**${NUMBER} 5)${MENU} show-hosts-info ${NORMAL}          - Displays the config that needs to exist in the hosts file"
     echo -e "${MENU}*********************************************${NORMAL}"
     echo -e "${ENTER_LINE}Please enter a menu option and enter or ${RED_TEXT}enter to exit. ${NORMAL}"
     read opt
@@ -28,13 +38,22 @@ while [ opt != '' ]
     else
         case $opt in
         1) clear;
-        "./resources/actions/create-vm.sh"
+        "$current_file_directory/resources/actions/create-vm.sh"
         show_menu;
         ;;
 		2) clear;
-        "./resources/actions/add-project.sh"
+        "$current_file_directory/resources/actions/add-project.sh"
         show_menu;
         ;;
+		3) clear;
+        "$current_file_directory/resources/actions/change-domain-extension.sh"
+        show_menu;
+        ;;
+		4) clear;
+        "$current_file_directory/resources/actions/regenerate-configs.sh"
+        show_menu;
+        ;;		
+		
 
 
         x)exit;
