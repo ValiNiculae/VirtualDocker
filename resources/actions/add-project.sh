@@ -51,7 +51,6 @@ fi
 PROJECT_DOMAIN_NAME="${PROJECT// /-}.$PROJECT_DOMAIN_EXTENSION"
 
 
-
 cp "./volumes/nginx/conf.d/www.conf.sample" "./volumes/nginx/conf.d/$PROJECT_DOMAIN_NAME.conf"
 
 sed -i "s#{{folder_name}}#${PROJECT}#g" "volumes/nginx/conf.d/$PROJECT_DOMAIN_NAME.conf"
