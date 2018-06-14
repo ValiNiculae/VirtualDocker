@@ -1,7 +1,7 @@
 #!/bin/sh
 
 current_file_directory=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-
+set -o allexport; source $current_file_directory/../../.env.sample; set +o allexport
 
 # get or create projects path
 while [ ! -d "${projects_directory_path}" ]
@@ -12,53 +12,37 @@ do
 	projects_directory_path=$(realpath "$projects_directory_path")
 		
 	if [ ! -d "$projects_directory_path" ]; then
-		read -e -p $'\e[91mPath does not exist!\e[0m \e[36mWould you like to create it for you?\e[0m (y/n) ' RESPONSE
+		read -e -p $'\e[91mPath does not exist!\e[0m \e[36mWould you like to create it for you?\e[0m (y/n) ' response
 		
-		if [ $RESPONSE = "y" ]; then
+		if [ $response = "y" ]; then
 			mkdir -p "${projects_directory_path}"
 		fi
 	fi
 done
 
-
-
-# usage: generate_nginx_config <local_projects_path>
-# function generate_nginx_config()
-# {
-	# docker_machine_ip=$(docker-machine ip $MACHINE_NAME)
-	# NGINX_CONFIG=$(pwd)/volumes/nginx/conf.d
-
-	# for d in "$1"/*/ ; do
-		# folder_name=$(basename "$d")
-		# domain_name=$(basename "${d// /-}").test	
-		# ./resources/scripts/nginx-config-generator.sh $folder_name
-		
-		# #generate ssl certificates
-		# ./resources/scripts/certificate-generator.sh ${domain_name// /-}.test
-		
-		# hosts+="$docker_machine_ip $domain_name\n"
-	# done
-	
-	# hosts+="$docker_machine_ip docker\n"
-	
-	# echo "$hosts"
-# }
-
-
+# get machine name
 echo -e "\e[36mNow lets build a VirtualBox machine. What do you want to call it?\e[0m" >&2
 read -e -p $'\e[32m> \e[0m' machine_name
 
 # docker machine setup
-$current_file_directory/setup-docker-machine.sh $machine_name
-
-
-#HOSTS=$(generate_nginx_config "$LOCAL_PROJECTS_PATH")
+$current_file_directory/setup-docker-machine.sh ${machine_name} ${current_file_directory}/../../ ${projects_directory_path}
 
 # write to ENV file
 cp .env.sample .env
 
 sed -i "s#LOCAL_PROJECTS_PATH=.*#LOCAL_PROJECTS_PATH=${projects_directory_path}#g" .env 
 sed -i "s#MACHINE_NAME=.*#MACHINE_NAME=${machine_name}#g" .env 
+
+
+# generate configs and certificates for all folders
+docker_machine_ip=$(docker-machine ip $machine_name)
+
+for d in "$projects_directory_path"/*/ ; do
+	domain_name=$(basename "${d// /-}").$DOMAIN_EXTENSION
+	hosts+="$docker_machine_ip $domain_name\n"
+done
+
+hosts+="$docker_machine_ip docker\n"
 
 
 # hosts settings
