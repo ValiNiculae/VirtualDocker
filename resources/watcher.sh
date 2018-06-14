@@ -3,20 +3,21 @@
 readonly projects_path=/docker/projects
 readonly docker_path=/docker/machine
 
-current_file_directory=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-
-if [ -f $current_file_directory/../../.env ]; then
-	set -o allexport; source $docker_path/.env; set +o allexport
+set -o allexport;
+if [ -f $docker_path/.env ]; then
+	source $docker_path/.env; 
 else
-	set -o allexport; source $docker_path/.env.sample; set +o allexport
+echo "test"; exit;
+	source $docker_path/.env.sample;
 fi
+set +o allexport
 
 sha=0
 previous_sha=0
 
 function build()
 {
-	$current_file_directory/scripts/configs-generator.sh $1
+	$docker_path/resources/scripts/configs-generator.sh "$(realpath $projects_path)";
 	cd /docker/machine && docker-compose restart nginx
 }
 

@@ -2,8 +2,8 @@
 
 # $1 - domain name
 
-current_file_directory=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-nginx_volume=$current_file_directory/../../volumes/nginx
+current_file_directory="$( cd "$(dirname "$0")" ; pwd -P )"
+nginx_volume=$(realpath $current_file_directory/../../volumes/nginx)
 
 cd $current_file_directory/../ssl
 
@@ -32,7 +32,7 @@ DNS.2 = *.${1}
 EOF
 	
 # build the certificate
-openssl req -new -newkey rsa:2048 -sha256 -nodes $KEY_OPT private.key -subj "/C=RO/ST=None/L=BUCURESTI/O=None/CN=$1" -out private.csr
+openssl req -new -newkey rsa:2048 -sha256 -nodes $KEY_OPT private.key -subj "//C=RO\ST=None\L=BUCURESTI\O=None\CN=$1" -out private.csr
 openssl x509 -req -in private.csr -CA vdockerCA.pem -CAkey vdockerCA.key -CAcreateserial -out private.crt -days 999 -sha256 -extfile v3.ext
 
 # move output files to final filenames

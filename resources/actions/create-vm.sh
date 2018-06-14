@@ -3,6 +3,7 @@
 current_file_directory=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 set -o allexport; source $current_file_directory/../../.env.sample; set +o allexport
 
+
 # get or create projects path
 while [ ! -d "${projects_directory_path}" ]
 do
@@ -25,7 +26,7 @@ echo -e "\e[36mNow lets build a VirtualBox machine. What do you want to call it?
 read -e -p $'\e[32m> \e[0m' machine_name
 
 # docker machine setup
-$current_file_directory/setup-docker-machine.sh ${machine_name} ${current_file_directory}/../../ ${projects_directory_path}
+$current_file_directory/../scripts/setup-docker-machine.sh ${machine_name} $(realpath "$current_file_directory/../../") $(realpath $projects_directory_path)
 
 # write to ENV file
 cp .env.sample .env
@@ -48,7 +49,7 @@ hosts+="$docker_machine_ip docker\n"
 # hosts settings
 echo -e "\e[92mDon't forget to update your hosts file with the following: "
 echo -e "\e[33m# docker settings"
-echo -e "$HOSTS"
+echo -e "$hosts"
 
 
 # finish line

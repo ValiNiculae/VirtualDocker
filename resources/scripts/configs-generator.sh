@@ -2,13 +2,14 @@
 
 # $1 - projects_path
 
-current_file_directory=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-projects_path=$1
+current_file_directory="$( cd "$(dirname "$0")" ; pwd -P )"
 
+projects_path=$1
+docker_path=$(realpath "$current_file_directory/../../")
 
 # load and .env file
 set -o allexport;
-if [ -f $current_file_directory/../../.env ]; then
+if [ -f "$docker_path/.env" ]; then
 	source $docker_path/.env;
 else
 	source $docker_path/.env.sample; 
@@ -28,12 +29,12 @@ do
 	
 	# skip if we already have a NGINX config for this folder
 	if [ ! -f "$current_file_directory/../../volumes/nginx/conf.d/$domain_name.conf" ]; then
-		$current_file_directory/nginx-config-generator.sh "$folder_name" "$DOMAIN_EXTENSION"
+		$current_file_directory/nginx-config-generator.sh "$folder_name" "$domain_name"
 	fi
 	
 	# skip if we already have a ssl certificate for this comain
 	if [ ! -f "$current_file_directory/../../volumes/nginx/ssl/$domain_name.key" ] || [ ! -f "$docker_path/volumes/nginx/ssl/$domain_name.crt" ]; then
 		#generate ssl certificates
-		$current_file_directory/certificate-generator.sh "${domain_name// /-}.$DOMAIN_EXTENSION"
+		$current_file_directory/certificate-generator.sh "${domain_name}"
 	fi
 done
