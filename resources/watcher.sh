@@ -7,7 +7,6 @@ set -o allexport;
 if [ -f $docker_path/.env ]; then
 	source $docker_path/.env; 
 else
-echo "test"; exit;
 	source $docker_path/.env.sample;
 fi
 set +o allexport
