@@ -3,5 +3,4 @@
 .env
 /.idea
 /volumes/mysql
-/resources/ssl
 /volumes/nginx/ssl/*
