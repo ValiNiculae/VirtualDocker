@@ -19,6 +19,7 @@ if [ ! -f vdockerCA.pem ] || [ ! -f vdockerCA.key ];  then
 
 	openssl genrsa -out vdockerCA.key 2048
 	openssl req -x509 -new -nodes -key vdockerCA.key -sha256 -days 1024 -out vdockerCA.pem -subj $subjectCA
+	
 fi
 
 # Create a new private key if one doesnt exist, or use the existing one if it does

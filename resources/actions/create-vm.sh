@@ -25,8 +25,10 @@ done
 echo -e "\e[36mNow lets build a VirtualBox machine. What do you want to call it?\e[0m" >&2
 read -e -p $'\e[32m> \e[0m' machine_name
 
+$docker_path/resources/scripts/configs-generator.sh "$projects_directory_path";
+
 # docker machine setup
-$current_file_directory/../scripts/setup-docker-machine.sh ${machine_name} $(realpath "$current_file_directory/../../") $(realpath $projects_directory_path)
+$current_file_directory/../scripts/setup-docker-machine.sh ${machine_name} $(realpath "$current_file_directory/../../") $projects_directory_path
 
 # write to ENV file
 cp .env.sample .env
