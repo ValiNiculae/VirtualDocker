@@ -1,6 +1,4 @@
 /builds
-/volumes/nginx/conf.d/*.conf
+/volumes
 .env
 /.idea
-/volumes/mysql
-/volumes/nginx/ssl/*
