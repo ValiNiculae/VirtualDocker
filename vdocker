@@ -41,7 +41,7 @@ while [ opt != '' ]
         show_menu;
         ;;
 		2) clear;
-        "$current_file_directory/resources/actions/add-project.sh"
+        "$current_file_directory/resources/actions/configure-project.sh"
         show_menu;
         ;;
 		3) clear;
