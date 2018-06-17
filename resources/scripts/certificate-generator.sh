@@ -5,6 +5,7 @@
 current_file_directory="$( cd "$(dirname "$0")" ; pwd -P )"
 nginx_volume=$(realpath $current_file_directory/../../volumes/nginx)
 
+mkdir -p $current_file_directory/../ssl
 cd $(realpath "$current_file_directory/../ssl")
 
 if [[ "$(uname -a)" = *"MINGW"* ]]; then

@@ -25,7 +25,6 @@ done
 echo -e "\e[36mNow lets build a VirtualBox machine. What do you want to call it?\e[0m" >&2
 read -e -p $'\e[32m> \e[0m' machine_name
 
-$docker_path/resources/scripts/configs-generator.sh "$projects_directory_path";
 
 # docker machine setup
 $current_file_directory/../scripts/setup-docker-machine.sh ${machine_name} $(realpath "$current_file_directory/../../") $projects_directory_path
@@ -36,6 +35,7 @@ cp .env.sample .env
 sed -i "s#LOCAL_PROJECTS_PATH=.*#LOCAL_PROJECTS_PATH=${projects_directory_path}#g" .env 
 sed -i "s#MACHINE_NAME=.*#MACHINE_NAME=${machine_name}#g" .env 
 
+$current_file_directory/../scripts/configs-generator.sh "$projects_directory_path";
 
 # generate configs and certificates for all folders
 docker_machine_ip=$(docker-machine ip $machine_name)
