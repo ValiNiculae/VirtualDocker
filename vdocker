@@ -18,10 +18,9 @@ show_menu(){
     ENTER_LINE=`echo "\033[33m"`
     echo -e "${MENU}*********************************************${NORMAL}"
     echo -e "${MENU}**${NUMBER} 1)${MENU} create-vm ${NORMAL}                - Create a VirtualBox machine"
-    echo -e "${MENU}**${NUMBER} 2)${MENU} add-project ${NORMAL}              - Configure a custom nginx config"
-	echo -e "${MENU}---------------------------------------------------------------------------------------------------"
+    echo -e "${MENU}**${NUMBER} 2)${MENU} configure-project ${NORMAL}        - Configure a project that will create a custom nginx config"
     echo -e "${MENU}**${NUMBER} 3)${MENU} change-domain-extension ${NORMAL}  - Change current domain extension (${DOMAIN_EXTENSION})"
-    echo -e "${MENU}**${NUMBER} 4)${MENU} regenerate-configs ${NORMAL}             - Generate an external url for a local domain" 
+    echo -e "${MENU}**${NUMBER} 4)${MENU} regenerate-configs ${NORMAL}       - Generate an external url for a local domain" 
     echo -e "${MENU}**${NUMBER} 5)${MENU} show-hosts-info ${NORMAL}          - Displays the config that needs to exist in the hosts file"
     echo -e "${MENU}*********************************************${NORMAL}"
     echo -e "${ENTER_LINE}Please enter a menu option and enter or ${RED_TEXT}enter to exit. ${NORMAL}"
@@ -53,8 +52,10 @@ while [ opt != '' ]
         "$current_file_directory/resources/actions/regenerate-configs.sh"
         show_menu;
         ;;		
-		
-
+		5) clear;
+        "$current_file_directory/resources/actions/show-hosts-config.sh"
+        show_menu;
+        ;;			
 
         x)exit;
         ;;

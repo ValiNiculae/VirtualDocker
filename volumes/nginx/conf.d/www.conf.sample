@@ -7,7 +7,7 @@ server {
 	ssl_protocols TLSv1.2 TLSv1.1 TLSv1;
 	
     server_name {{folder_domain}};
-    root "/applications/{{folder_name}}/public";
+    root "/applications/{{folder_name}}/{{root_folder}}";
 
     add_header X-Frame-Options "SAMEORIGIN";
     add_header X-XSS-Protection "1; mode=block";

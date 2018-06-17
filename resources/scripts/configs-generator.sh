@@ -41,12 +41,12 @@ do
 			# add certificate to windows trusted root certificates
 			certutil -addstore -f -v root $current_file_directory/../ssl/vdockerCA.pem
 		fi
-		export HAS_TRUSTED_CERTIFICATE="test"
+		export HAS_TRUSTED_CERTIFICATE="true"
 	fi
 	
 	
 	# skip if we already have a ssl certificate for this comain
-	if [ ! -f "$current_file_directory/../../volumes/nginx/ssl/$domain_name.key" ] || [ ! -f "$docker_path/volumes/nginx/ssl/$domain_name.crt" ]; then
+	if [ ! -f "$docker_path/volumes/nginx/ssl/$domain_name.key" ] || [ ! -f "$docker_path/volumes/nginx/ssl/$domain_name.crt" ]; then
 		#generate ssl certificates
 		$current_file_directory/certificate-generator.sh "${domain_name}"
 	fi
