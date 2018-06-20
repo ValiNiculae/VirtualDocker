@@ -1,5 +1,5 @@
 # VirtualDocker
-A docker development environment setup with VirtualBox. I built a shell script that will have a lot a utility actions so that you don't need to know docker or linux commands.
+A docker development environment setup with VirtualBox. I built a shell script that will have a lot of utility actions so that you don't need to know docker or linux commands.
 
 ### How to install
 `` git clone git@github.com:ValiNiculae/VirtualDocker.git ``
