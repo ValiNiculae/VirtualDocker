@@ -55,6 +55,6 @@ echo -e "$hosts"
 
 
 # finish line
-echo -e "\e[32mYour \e[33m$MACHINE_NAME\e[0m \e[32m machine was created successfully."
-echo -e "\e[32mYou can connect to it using the following command:\e[0m \"\e[33mdocker-machine ssh $MACHINE_NAME\e[0m\""
+echo -e "\e[32mYour \e[33m$machine_name\e[0m \e[32m machine was created successfully."
+echo -e "\e[32mYou can connect to it using the following command:\e[0m \"\e[33mdocker-machine ssh $machine_name\e[0m\""
 
