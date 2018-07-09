@@ -15,23 +15,48 @@ services:
 
     # php 7.2
     php: 
-        image: php:7.2-fpm
+        build: 
+            context: ./builds/php
+            dockerfile: Dockerfile
+        image: valiniculae/php
         restart: always
         volumes:
             - /docker/projects:/applications           
 
+    # php 7.2
+    php5: 
+        build: 
+            context: ./builds/php
+            dockerfile: Dockerfile-php5
+        image: valiniculae/php5:latest
+        restart: always
+        volumes:
+            - /docker/projects:/applications  
+            
+    # node
+    node:
+        build:
+          context: ./builds/node
+          dockerfile: Dockerfile
+        image: valiniculae/node:latest
+        volumes:
+         - ../projects:/opt
+        working_dir: /opt
+        command: echo hi    
+            
     # mysql
     mysql:
         image: mysql:5.7
         restart: always
-        volumes:
-          - /docker/machine/volumes/mysql:/var/lib/mysql
         ports: 
             - "3306:3306"
+        volumes:
+            - ./volumes/mysql/:/var/lib/mysql
+        command: --innodb-use-native-aio=0
         environment:
             MYSQL_DATABASE: vdocker
             MYSQL_ROOT_PASSWORD: secret
-        command: --innodb_use_native_aio=0
+
     
     #redis
     redis:
