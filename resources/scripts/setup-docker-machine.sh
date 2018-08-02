@@ -35,6 +35,7 @@ docker-machine stop $1
 # SHARE FOLDERS
 "$VBOX_MSI_INSTALL_PATH"vboxmanage sharedfolder add $1 --name "docker/machine" --hostpath "$2" --automount
 "$VBOX_MSI_INSTALL_PATH"vboxmanage sharedfolder add $1 --name "docker/projects" --hostpath "$3" --automount	
+"$VBOX_MSI_INSTALL_PATH"vboxmanage setextradata $1 VBoxInternal2/SharedFoldersEnableSymlinksCreate/docker/projects 1
 
 docker-machine start $1
 docker-machine ssh $1 "sudo sh /docker/machine/resources/boot.sh"	

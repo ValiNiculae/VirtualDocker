@@ -14,31 +14,15 @@ services:
             - "443:443"
 
     # php 7.2
-    php: 
-        build: 
-            context: ./builds/php
-            dockerfile: Dockerfile
+    php:
         image: valiniculae/php
         restart: always
         volumes:
             - /docker/projects:/applications           
-
-    # php 7.2
-    php5: 
-        build: 
-            context: ./builds/php
-            dockerfile: Dockerfile-php5
-        image: valiniculae/php5:latest
-        restart: always
-        volumes:
-            - /docker/projects:/applications  
             
     # node
     node:
-        build:
-          context: ./builds/node
-          dockerfile: Dockerfile
-        image: valiniculae/node:latest
+        image: node:6
         volumes:
          - ../projects:/opt
         working_dir: /opt
