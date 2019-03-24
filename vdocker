@@ -20,8 +20,8 @@ show_menu(){
     echo -e "${MENU}**${NUMBER} 1)${MENU} create-vm ${NORMAL}                - Create a VirtualBox machine"
     echo -e "${MENU}**${NUMBER} 2)${MENU} configure-project ${NORMAL}        - Configure a project that will create a custom nginx config"
     echo -e "${MENU}**${NUMBER} 3)${MENU} change-domain-extension ${NORMAL}  - Change current domain extension (${DOMAIN_EXTENSION})"
-    echo -e "${MENU}**${NUMBER} 4)${MENU} regenerate-configs ${NORMAL}       - Generate an external url for a local domain" 
-    echo -e "${MENU}**${NUMBER} 5)${MENU} show-hosts-info ${NORMAL}          - Displays the config that needs to exist in the hosts file"
+    echo -e "${MENU}**${NUMBER} 4)${MENU} regenerate-configs ${NORMAL}       - Generate nginx configs and ssl certificate for every project" 
+    echo -e "${MENU}**${NUMBER} 5)${MENU} update-hosts-file ${NORMAL}        - Update windows hosts file with the hostnames of your projects"
     echo -e "${MENU}*********************************************${NORMAL}"
     echo -e "${ENTER_LINE}Please enter a menu option and enter or ${RED_TEXT}enter to exit. ${NORMAL}"
     read opt
@@ -53,7 +53,7 @@ while [ opt != '' ]
         show_menu;
         ;;		
 		5) clear;
-        "$current_file_directory/resources/actions/show-hosts-config.sh"
+        "$current_file_directory/resources/actions/update-hosts-file.sh"
         show_menu;
         ;;			
 
